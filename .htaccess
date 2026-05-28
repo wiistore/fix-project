@@ -1,12 +1,4 @@
-Options -Indexes
-
 <IfModule mod_rewrite.c>
     RewriteEngine On
-
-    # Blok akses langsung ke folder internal
-    RewriteRule ^(app|database|storage)(/.*)?$ - [F,L]
-
-    # Semua request aplikasi masuk ke folder public
-    RewriteCond %{REQUEST_URI} !/public/
-    RewriteRule ^(.*)$ public/$1 [L,QSA]
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
