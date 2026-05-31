@@ -1,0 +1,31 @@
+# Environment & local config overrides
+.env
+.env.*
+*.local.php
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.idea/
+.vscode/
+*.sublime-*
+*.swp
+
+# Logs & cache
+*.log
+/storage/logs/*
+/cache/*
+
+# Build / temp
+/tmp/
+*.tmp
+
+# Catatan: folder vendor/ SENGAJA di-track (berisi dompdf dkk untuk fitur PDF).
+# Dokumen & diagram disimpan terpisah, tidak ikut di repo aplikasi.
+
+
+# Dokumen & diagram (SRS, ERD, UML, dll) - bukan bagian dari aplikasi
+/dokumen dan diagram/
