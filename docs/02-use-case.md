@@ -23,7 +23,7 @@
 | Aktor | Deskripsi |
 |---|---|
 | **Admin** | Pemilik / pengelola toko. Akses penuh: master data (barang, kategori, supplier, user), restock, transaksi, riwayat (edit & batal), dan laporan. |
-| **Kasir** | Petugas penjualan. Akses terbatas: melakukan transaksi penjualan, mencetak struk, dan mengelola profil sendiri. |
+| **Kasir** | Petugas penjualan. Akses terbatas: melakukan transaksi penjualan, mencetak struk, dan mengganti password sendiri. |
 
 > Catatan: Admin **juga bisa** melakukan transaksi penjualan (endpoint `/admin/transaksi`), jadi sebagian use case dipakai bersama (generalisasi).
 
@@ -51,7 +51,7 @@ flowchart LR
         UC12((Lihat Laporan))
         UC13((Export Laporan Excel))
         UC14((Lihat Dashboard))
-        UC15((Kelola Profil))
+        UC15((Ganti Password))
     end
 
     Admin --- UC1
@@ -143,7 +143,7 @@ flowchart LR
         K2((Lihat Dashboard))
         K3((Lakukan Transaksi))
         K4((Cetak Struk + PDF))
-        K5((Kelola Profil:<br/>update data & password))
+        K5((Ganti Password<br/>sendiri))
     end
     Kasir --- K1 & K2 & K3 & K4 & K5
 ```
@@ -168,7 +168,7 @@ flowchart LR
 | UC-12 | Kelola Riwayat Transaksi | Admin | `RiwayatController` |
 | UC-13 | Lihat Laporan | Admin | `LaporanController` |
 | UC-14 | Export Laporan Excel | Admin | `LaporanController` |
-| UC-15 | Kelola Profil | Kasir | `KasirController` |
+| UC-15 | Ganti Password | Kasir | `KasirController` |
 
 ---
 
@@ -485,7 +485,7 @@ flowchart LR
 
 ---
 
-### UC-15: Kelola Profil (Kasir)
+### UC-15: Ganti Password (Kasir)
 
 | Field | Keterangan |
 |---|---|
@@ -493,16 +493,20 @@ flowchart LR
 | **Prakondisi** | Login sebagai kasir. |
 
 **Alur Utama:**
-1. Kasir membuka halaman profil.
-2. **Update Profil:** ubah username & email (validasi unik) → simpan & refresh session.
-3. **Update Password:** isi password lama (harus cocok), password baru (min 8) + konfirmasi → hash & simpan.
+1. Kasir membuka halaman profil (info akun tampil read-only).
+2. Kasir mengisi password lama, password baru (min 8), dan konfirmasi.
+3. Sistem memvalidasi: password lama harus cocok, password baru min 8 karakter, konfirmasi sama dengan password baru.
+4. Sistem meng-hash & menyimpan password baru.
 
 **Alur Alternatif:**
 - 1a. Akun sudah tidak ada di DB → logout otomatis.
-- 2a. Username/email duplikat → flash error.
-- 3a. Password lama salah → flash error.
+- 3a. Password lama salah → flash error "Password saat ini salah".
+- 3b. Validasi password baru/konfirmasi gagal → flash error.
+- 4a. Gagal simpan → flash error "Password gagal diperbarui".
 
-**Pascakondisi:** Data profil / password kasir terupdate.
+**Pascakondisi:** Password kasir terupdate.
+
+> Catatan: Profil kasir **tidak** menyediakan edit username/email. Perubahan data akun (username, email, status) hanya dilakukan oleh Admin melalui UC-08.
 
 ---
 

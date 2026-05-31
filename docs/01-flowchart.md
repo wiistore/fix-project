@@ -53,7 +53,7 @@ flowchart TD
 
     KSR --> KSRM{Menu Kasir}
     KSRM -- Operasional --> KOP[Transaksi Penjualan]
-    KSRM -- Akun --> KP[Update Profil]
+    KSRM -- Akun --> KP[Ganti Password]
     KSRM -- Logout --> LO
 
     MD --> ADM
@@ -534,6 +534,7 @@ flowchart TD
 ## 16. Profil Kasir
 
 **File:** `app/controllers/KasirController.php`
+> Catatan: Profil kasir **hanya** menyediakan ganti password. Tidak ada fitur edit username/email.
 
 ```mermaid
 flowchart TD
@@ -543,18 +544,15 @@ flowchart TD
     C -- Ya --> E[Ambil user dari DB]
     E --> F{User masih ada?}
     F -- Tidak --> G[Logout] --> Z
-    F -- Ya --> H[Render form profil]
-    H --> I{Aksi}
-    I -- Update Profil --> J[POST update-profil]
-    J --> J1[Validasi username & email]
-    J1 --> J2{Unik?}
-    J2 -- Tidak --> J3[Flash error] --> H
-    J2 -- Ya --> J4[Update + refresh session] --> Z
-    I -- Update Password --> K[POST update-password]
-    K --> K1[Validasi current, new min 8, konfirmasi]
-    K1 --> K2{Current cocok?}
+    F -- Ya --> H[Render halaman profil:<br/>info akun read-only +<br/>form ganti password]
+    H --> K[POST update-password]
+    K --> K1[Validasi: current_password required,<br/>password min 8, konfirmasi same]
+    K1 --> K2{Current password cocok?}
     K2 -- Tidak --> K3[Flash error] --> H
-    K2 -- Ya --> K4[Hash + update] --> Z
+    K2 -- Ya --> K4[Hash + updateOwnPassword]
+    K4 --> K5{Berhasil?}
+    K5 -- Tidak --> K6[Flash error] --> H
+    K5 -- Ya --> K7[Flash success] --> Z
 ```
 
 ---
