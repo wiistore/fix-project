@@ -68,58 +68,6 @@ class KasirController extends Controller
         Session::remove('_old');
     }
 
-    public function updateProfil(): void
-    {
-        // Cek akses
-        $this->requireRole('kasir');
-
-        $userId = (int) Session::userId();
-
-        // Validasi input
-        $data = [
-            'username' => trim($_POST['username'] ?? ''),
-            'email' => trim($_POST['email'] ?? ''),
-        ];
-
-        Session::set('_old', $data);
-
-        $errors = Validator::validate($data, [
-            'username' => ['required', 'max:50'],
-            'email' => ['required', 'email', 'max:100'],
-        ]);
-
-        if ($this->userModel->usernameExists($data['username'], $userId)) {
-            $errors['username'] = 'Username sudah dipakai.';
-        }
-
-        if ($this->userModel->emailExists($data['email'], $userId)) {
-            $errors['email'] = 'Email sudah dipakai.';
-        }
-
-        if (!empty($errors)) {
-            Session::set('_errors', $errors);
-            $this->redirect('/kasir/profil');
-        }
-
-        // Simpan data
-        $updated = $this->userModel->updateOwnProfile($userId, $data);
-
-        if (!$updated) {
-            Session::setFlash('error', 'Profil gagal diperbarui.');
-            $this->redirect('/kasir/profil');
-        }
-
-        $freshUser = $this->userModel->findById($userId);
-
-        if ($freshUser) {
-            Session::set('user', $freshUser);
-        }
-
-        Session::remove('_old');
-        Session::setFlash('success', 'Profil berhasil diperbarui.');
-        $this->redirect('/kasir/profil');
-    }
-
     public function updatePassword(): void
     {
         // Cek akses

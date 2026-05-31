@@ -18,9 +18,10 @@ $title = $title ?? 'Dashboard';
         </div>
 
         <div class="app-navbar-right">
-            <div class="app-navbar-search">
+            <div class="app-navbar-search" data-global-search-wrap>
                 <i class="ti ti-search"></i>
-                <input type="search" placeholder="Cari menu..." data-global-search>
+                <input type="search" placeholder="Cari menu..." data-global-search autocomplete="off">
+                <div class="app-search-results" data-global-search-results hidden></div>
             </div>
 
             <div class="app-profile" data-profile-menu>

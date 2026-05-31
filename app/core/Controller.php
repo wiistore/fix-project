@@ -40,11 +40,6 @@ class Controller
         Response::redirect($url);
     }
 
-    protected function back(): void
-    {
-        Response::back();
-    }
-
     protected function requireLogin(): void
     {
         if (!Session::isLoggedIn()) {
@@ -63,33 +58,6 @@ class Controller
         if (!in_array($userRole, $allowedRoles, true)) {
             $this->redirect('/403');
         }
-    }
-
-    protected function currentUser()
-    {
-        return Session::user();
-    }
-
-    protected function input(string $key, $default = null)
-    {
-        return $_POST[$key] ?? $_GET[$key] ?? $default;
-    }
-
-    protected function old(string $key, $default = null)
-    {
-        $old = Session::get('_old', []);
-
-        return $old[$key] ?? $default;
-    }
-
-    protected function rememberOld(array $data): void
-    {
-        Session::set('_old', $data);
-    }
-
-    protected function clearOld(): void
-    {
-        Session::remove('_old');
     }
 
     private function viewPath(string $path): string

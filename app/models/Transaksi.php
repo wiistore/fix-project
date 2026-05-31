@@ -51,11 +51,6 @@ class Transaksi extends Model
         return $this->lastInsertId();
     }
 
-    public function insert(array $data): int
-    {
-        return $this->create($data);
-    }
-
     public function findById(int $id)
     {
         // Detail transaksi utama
@@ -85,47 +80,6 @@ class Transaksi extends Model
         return $this->fetch($sql, [
             'id' => $id,
         ]);
-    }
-
-    public function getById(int $id)
-    {
-        return $this->findById($id);
-    }
-
-    public function getAll(int $limit = 100): array
-    {
-        return $this->getWithUser($limit);
-    }
-
-    public function getWithUser(int $limit = 100): array
-    {
-        // Ambil transaksi + kasir
-        $limit = max(1, min($limit, 300));
-
-        $sql = "
-            SELECT
-                t.id,
-                t.kode_transaksi,
-                t.id_user,
-                u.username AS nama_kasir,
-                t.tanggal,
-                t.total_jual,
-                t.total_beli,
-                t.total_laba,
-                t.metode_bayar,
-                t.nominal_bayar,
-                t.kembalian,
-                t.status,
-                t.alasan_batal,
-                t.edited_at,
-                t.created_at
-            FROM {$this->table} t
-            INNER JOIN users u ON u.id = t.id_user
-            ORDER BY t.tanggal DESC, t.id DESC
-            LIMIT {$limit}
-        ";
-
-        return $this->fetchAll($sql);
     }
 
     public function getByDateRange(?string $start = null, ?string $end = null, int $limit = 300): array
@@ -175,104 +129,6 @@ class Transaksi extends Model
         return $this->fetchAll($sql, $params);
     }
 
-    public function getByUserId(int $userId, int $limit = 100): array
-    {
-        // Transaksi milik kasir tertentu
-        $limit = max(1, min($limit, 300));
-
-        $sql = "
-            SELECT
-                id,
-                kode_transaksi,
-                id_user,
-                tanggal,
-                total_jual,
-                metode_bayar,
-                nominal_bayar,
-                kembalian,
-                created_at
-            FROM {$this->table}
-            WHERE id_user = :id_user
-            ORDER BY tanggal DESC, id DESC
-            LIMIT {$limit}
-        ";
-
-        return $this->fetchAll($sql, [
-            'id_user' => $userId,
-        ]);
-    }
-
-    public function getTodayByUserId(int $userId, int $limit = 20): array
-    {
-        // Transaksi hari ini per kasir
-        $limit = max(1, min($limit, 100));
-
-        $sql = "
-            SELECT
-                id,
-                kode_transaksi,
-                tanggal,
-                total_jual,
-                metode_bayar,
-                nominal_bayar,
-                kembalian
-            FROM {$this->table}
-            WHERE id_user = :id_user
-              AND DATE(tanggal) = CURDATE()
-            ORDER BY tanggal DESC, id DESC
-            LIMIT {$limit}
-        ";
-
-        return $this->fetchAll($sql, [
-            'id_user' => $userId,
-        ]);
-    }
-
-    public function summaryToday(): array
-    {
-        // Ringkasan hari ini
-        $sql = "
-            SELECT
-                COUNT(id) AS total_transaksi,
-                COALESCE(SUM(total_jual), 0) AS total_penjualan,
-                COALESCE(SUM(total_beli), 0) AS total_modal,
-                COALESCE(SUM(total_laba), 0) AS total_laba
-            FROM {$this->table}
-            WHERE DATE(tanggal) = CURDATE()
-        ";
-
-        $row = $this->fetch($sql);
-
-        return [
-            'total_transaksi' => (int) ($row['total_transaksi'] ?? 0),
-            'total_penjualan' => (float) ($row['total_penjualan'] ?? 0),
-            'total_modal' => (float) ($row['total_modal'] ?? 0),
-            'total_laba' => (float) ($row['total_laba'] ?? 0),
-        ];
-    }
-
-    public function summaryTodayByUserId(int $userId): array
-    {
-        // Ringkasan hari ini per kasir
-        $sql = "
-            SELECT
-                COUNT(id) AS total_transaksi,
-                COALESCE(SUM(total_jual), 0) AS total_penjualan
-            FROM {$this->table}
-            WHERE id_user = :id_user
-              AND DATE(tanggal) = CURDATE()
-        ";
-
-        $row = $this->fetch($sql, [
-            'id_user' => $userId,
-        ]);
-
-        return [
-            'total_transaksi' => (int) ($row['total_transaksi'] ?? 0),
-            'total_penjualan' => (float) ($row['total_penjualan'] ?? 0),
-        ];
-    }
-
     public function generateCode(): string
     {
         // Kode transaksi unik
@@ -315,22 +171,6 @@ class Transaksi extends Model
         return $this->execute($sql, [
             'status' => $status,
             'alasan_batal' => $alasanBatal,
-            'id' => $id,
-        ]);
-    }
-
-    public function markAsEdited(int $id): bool
-    {
-        // Tandai transaksi sebagai telah diubah
-        $sql = "
-            UPDATE {$this->table}
-            SET status = 'diubah',
-                edited_at = NOW()
-            WHERE id = :id
-            LIMIT 1
-        ";
-
-        return $this->execute($sql, [
             'id' => $id,
         ]);
     }

@@ -78,11 +78,6 @@ class Restock extends Model
         ]);
     }
 
-    public function getById(int $id)
-    {
-        return $this->findById($id);
-    }
-
     public function create(array $data): int
     {
         // Simpan restock
@@ -136,11 +131,6 @@ class Restock extends Model
         ]);
 
         return $this->lastInsertId();
-    }
-
-    public function insert(array $data): int
-    {
-        return $this->create($data);
     }
 
     public function getFiltered(?string $start = null, ?string $end = null, ?string $tipe = null, int $limit = 200): array
@@ -198,67 +188,6 @@ class Restock extends Model
         ";
 
         return $this->fetchAll($sql, $params);
-    }
-
-    public function getByDateRange(?string $start = null, ?string $end = null, int $limit = 200): array
-    {
-        return $this->getFiltered($start, $end, null, $limit);
-    }
-
-    public function getBySupplierId(int $supplierId, int $limit = 100): array
-    {
-        // Restock per supplier
-        $limit = max(1, min($limit, 200));
-
-        $sql = "
-            SELECT
-                r.id,
-                r.tanggal,
-                r.tipe,
-                b.nama AS nama_barang,
-                r.qty,
-                r.harga_beli,
-                r.total_nilai,
-                r.created_at
-            FROM {$this->table} r
-            INNER JOIN barang b ON b.id = r.id_barang
-            WHERE r.id_supplier = :id_supplier
-            ORDER BY r.tanggal DESC, r.id DESC
-            LIMIT {$limit}
-        ";
-
-        return $this->fetchAll($sql, [
-            'id_supplier' => $supplierId,
-        ]);
-    }
-
-    public function getByBarangId(int $barangId, int $limit = 100): array
-    {
-        // Restock per barang
-        $limit = max(1, min($limit, 200));
-
-        $sql = "
-            SELECT
-                r.id,
-                r.tanggal,
-                r.tipe,
-                COALESCE(s.nama, '-') AS nama_supplier,
-                r.qty,
-                r.harga_beli,
-                r.harga_jual_baru,
-                r.total_nilai,
-                r.alasan,
-                r.created_at
-            FROM {$this->table} r
-            LEFT JOIN supplier s ON s.id = r.id_supplier
-            WHERE r.id_barang = :id_barang
-            ORDER BY r.tanggal DESC, r.id DESC
-            LIMIT {$limit}
-        ";
-
-        return $this->fetchAll($sql, [
-            'id_barang' => $barangId,
-        ]);
     }
 
     public function getLastHargaBeli(int $barangId): float

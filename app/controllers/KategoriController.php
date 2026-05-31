@@ -209,21 +209,4 @@ class KategoriController extends Controller
         Session::setFlash('success', 'Kategori berhasil dihapus.');
         $this->redirect('/admin/kategori');
     }
-
-    public function toggleStatus($id): void
-    {
-        $this->requireRole('admin');
-
-        $id = (int) $id;
-        $kategori = $this->kategoriModel->findById($id);
-
-        if (!$kategori) {
-            Session::setFlash('error', 'Kategori tidak ditemukan.');
-            $this->redirect('/admin/kategori');
-        }
-
-        // Kategori doesn't have a status column natively, so we just notify
-        Session::setFlash('error', 'Kategori tidak memiliki fitur toggle status. Hapus kategori jika tidak terpakai.');
-        $this->redirect('/admin/kategori');
-    }
 }

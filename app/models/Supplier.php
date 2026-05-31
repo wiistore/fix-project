@@ -82,11 +82,6 @@ class Supplier extends Model
         ]);
     }
 
-    public function getById(int $id)
-    {
-        return $this->findById($id);
-    }
-
     public function create(array $data): bool
     {
         // Simpan supplier
@@ -105,11 +100,6 @@ class Supplier extends Model
             'keterangan' => $this->nullable($data['keterangan'] ?? ''),
             'status' => $data['status'] ?? 'aktif',
         ]);
-    }
-
-    public function insert(array $data): bool
-    {
-        return $this->create($data);
     }
 
     public function update(int $id, array $data): bool
@@ -157,11 +147,6 @@ class Supplier extends Model
         ]);
     }
 
-    public function delete(int $id): bool
-    {
-        return $this->deleteOrDeactivate($id);
-    }
-
     public function updateStatus(int $id, string $status): bool
     {
         // Update status
@@ -195,11 +180,6 @@ class Supplier extends Model
         return $this->fetch($sql, [
             'id' => $id,
         ]) !== false;
-    }
-
-    public function hasRestock(int $id): bool
-    {
-        return $this->isUsedByRestock($id);
     }
 
     public function namaExists(string $nama, ?int $exceptId = null): bool
@@ -270,17 +250,6 @@ class Supplier extends Model
         ";
 
         return $this->fetchAll($sql);
-    }
-
-    public function countActive(): int
-    {
-        $sql = "
-            SELECT COUNT(id)
-            FROM {$this->table}
-            WHERE status = 'aktif'
-        ";
-
-        return $this->countRows($sql);
     }
 
     private function nullable($value)

@@ -99,30 +99,128 @@
 
     function initGlobalSearch() {
         const input = document.querySelector('[data-global-search]');
+        const wrap = document.querySelector('[data-global-search-wrap]');
+        const results = document.querySelector('[data-global-search-results]');
 
-        if (!input) {
+        if (!input || !wrap || !results) {
             return;
         }
 
-        const menuLinks = Array.from(document.querySelectorAll('.app-sidebar-link[href]'));
+        const menuItems = Array.from(document.querySelectorAll('.app-sidebar-link[href]'))
+            .map((link) => ({
+                label: link.textContent.trim().replace(/\s+/g, ' '),
+                href: link.href,
+            }))
+            .filter((item) => item.label !== '');
 
-        input.addEventListener('keydown', (event) => {
-            if (event.key !== 'Enter') {
-                return;
+        let matches = [];
+        let activeIndex = -1;
+
+        const closeResults = () => {
+            results.hidden = true;
+            results.innerHTML = '';
+            matches = [];
+            activeIndex = -1;
+            wrap.classList.remove('is-open');
+        };
+
+        const highlight = () => {
+            const options = results.querySelectorAll('[data-search-option]');
+            options.forEach((option, index) => {
+                option.classList.toggle('is-active', index === activeIndex);
+            });
+        };
+
+        const goTo = (index) => {
+            const item = matches[index];
+            if (item) {
+                window.location.href = item.href;
             }
+        };
 
-            event.preventDefault();
-
+        const render = () => {
             const keyword = input.value.trim().toLowerCase();
 
             if (!keyword) {
+                closeResults();
                 return;
             }
 
-            const target = menuLinks.find((link) => link.textContent.trim().toLowerCase().includes(keyword));
+            matches = menuItems.filter((item) => item.label.toLowerCase().includes(keyword));
+            activeIndex = matches.length ? 0 : -1;
 
-            if (target) {
-                window.location.href = target.href;
+            if (!matches.length) {
+                results.innerHTML = '<div class="app-search-empty">Menu tidak ditemukan</div>';
+                results.hidden = false;
+                wrap.classList.add('is-open');
+                return;
+            }
+
+            results.innerHTML = matches
+                .map((item, index) => `
+                    <button type="button" class="app-search-option" data-search-option data-index="${index}">
+                        <i class="ti ti-arrow-right"></i>
+                        <span></span>
+                    </button>
+                `)
+                .join('');
+
+            // Set text via textContent to avoid HTML injection from menu labels
+            results.querySelectorAll('[data-search-option]').forEach((option, index) => {
+                option.querySelector('span').textContent = matches[index].label;
+                option.addEventListener('mousedown', (event) => {
+                    event.preventDefault();
+                    goTo(index);
+                });
+                option.addEventListener('mouseenter', () => {
+                    activeIndex = index;
+                    highlight();
+                });
+            });
+
+            results.hidden = false;
+            wrap.classList.add('is-open');
+            highlight();
+        };
+
+        input.addEventListener('input', render);
+        input.addEventListener('focus', render);
+
+        input.addEventListener('keydown', (event) => {
+            if (results.hidden || !matches.length) {
+                if (event.key === 'Escape') {
+                    input.blur();
+                }
+                return;
+            }
+
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    activeIndex = (activeIndex + 1) % matches.length;
+                    highlight();
+                    break;
+                case 'ArrowUp':
+                    event.preventDefault();
+                    activeIndex = (activeIndex - 1 + matches.length) % matches.length;
+                    highlight();
+                    break;
+                case 'Enter':
+                    event.preventDefault();
+                    goTo(activeIndex >= 0 ? activeIndex : 0);
+                    break;
+                case 'Escape':
+                    closeResults();
+                    input.blur();
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!wrap.contains(event.target)) {
+                closeResults();
             }
         });
     }

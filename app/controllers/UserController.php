@@ -351,7 +351,6 @@ class UserController extends Controller
         $newStatus = $currentStatus === 'aktif' ? 'nonaktif' : 'aktif';
 
         // Update status directly
-        $sql = "UPDATE users SET status = :status WHERE id = :id AND role = 'kasir' LIMIT 1";
         $updated = $this->userModel->updateKasir($id, [
             'username' => $userData['username'],
             'email' => $userData['email'],
