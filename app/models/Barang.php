@@ -87,11 +87,6 @@ class Barang extends Model
         ]);
     }
 
-    public function getById(int $id)
-    {
-        return $this->findById($id);
-    }
-
     public function findActiveById(int $id)
     {
         // Detail barang aktif
@@ -160,11 +155,6 @@ class Barang extends Model
             'stok_minimum' => (int) $data['stok_minimum'],
             'status' => $data['status'] ?? 'aktif',
         ]);
-    }
-
-    public function insert(array $data): bool
-    {
-        return $this->create($data);
     }
 
     public function update(int $id, array $data): bool
@@ -303,41 +293,6 @@ class Barang extends Model
         return $statement->rowCount() > 0;
     }
 
-    public function search(string $keyword): array
-    {
-        // Cari barang buat POS
-        $keyword = trim($keyword);
-
-        if ($keyword === '') {
-            return [];
-        }
-
-        $sql = "
-            SELECT 
-                id,
-                kode_barang,
-                barcode,
-                nama,
-                satuan,
-                harga_jual,
-                stok,
-                stok_minimum
-            FROM {$this->table}
-            WHERE status = 'aktif'
-              AND (
-                    kode_barang LIKE :keyword
-                    OR barcode LIKE :keyword
-                    OR nama LIKE :keyword
-              )
-            ORDER BY nama ASC
-            LIMIT 20
-        ";
-
-        return $this->fetchAll($sql, [
-            'keyword' => '%' . $keyword . '%',
-        ]);
-    }
-
     public function kodeExists(string $kodeBarang, ?int $exceptId = null): bool
     {
         return $this->existsByField('kode_barang', $kodeBarang, $exceptId);
@@ -352,42 +307,6 @@ class Barang extends Model
         }
 
         return $this->existsByField('barcode', $barcode, $exceptId);
-    }
-
-    /**
-     * Cari barang aktif by barcode (dipakai POS scan).
-     */
-    public function findActiveByBarcode(string $barcode)
-    {
-        $barcode = trim($barcode);
-
-        if ($barcode === '') {
-            return false;
-        }
-
-        $sql = "
-            SELECT 
-                b.id,
-                b.kode_barang,
-                b.barcode,
-                b.nama,
-                b.id_kategori,
-                k.nama AS nama_kategori,
-                b.satuan,
-                b.harga_jual,
-                b.stok,
-                b.stok_minimum,
-                b.status
-            FROM {$this->table} b
-            INNER JOIN kategori k ON k.id = b.id_kategori
-            WHERE b.barcode = :barcode
-              AND b.status = 'aktif'
-            LIMIT 1
-        ";
-
-        return $this->fetch($sql, [
-            'barcode' => $barcode,
-        ]);
     }
 
     /**
@@ -475,11 +394,6 @@ class Barang extends Model
         $statement = $this->query($sql, $ids);
 
         return $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    }
-
-    public function checkDuplicate(string $field, string $value, ?int $ignoreId = null): bool
-    {
-        return $this->existsByField($field, $value, $ignoreId);
     }
 
     public function hasHistory(int $id): bool

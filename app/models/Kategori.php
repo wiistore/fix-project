@@ -44,11 +44,6 @@ class Kategori extends Model
         ]);
     }
 
-    public function getById(int $id)
-    {
-        return $this->findById($id);
-    }
-
     public function create(array $data): bool
     {
         // Simpan kategori
@@ -63,11 +58,6 @@ class Kategori extends Model
             'nama' => trim((string) $data['nama']),
             'deskripsi' => trim((string) ($data['deskripsi'] ?? '')),
         ]);
-    }
-
-    public function insert(array $data): bool
-    {
-        return $this->create($data);
     }
 
     public function update(int $id, array $data): bool
@@ -105,11 +95,6 @@ class Kategori extends Model
         return $this->execute($sql, [
             'id' => $id,
         ]);
-    }
-
-    public function delete(int $id): bool
-    {
-        return $this->deleteOrDeactivate($id);
     }
 
     public function isUsedByBarang(int $id): bool

@@ -235,7 +235,6 @@ class BarangController extends Controller
         }
 
         // Hapus permanen (tidak punya relasi)
-        $sql = "DELETE FROM barang WHERE id = :id LIMIT 1";
         $deleted = $this->barangModel->deleteOrDeactivate($id);
 
         if (!$deleted) {

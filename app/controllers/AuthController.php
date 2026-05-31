@@ -11,11 +11,6 @@ class AuthController extends Controller
         $this->userModel = $this->model('User');
     }
 
-    public function index(): void
-    {
-        $this->loginForm();
-    }
-
     public function loginForm(): void
     {
         // Kalau sudah login, langsung arahkan sesuai role
