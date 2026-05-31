@@ -100,32 +100,6 @@ class User extends Model
         return $this->fetchAll($sql);
     }
 
-    public function getKasirs(): array
-    {
-        // Ambil kasir saja
-        $sql = "
-            SELECT 
-                id,
-                username,
-                username AS nama,
-                email,
-                status,
-                created_at,
-                updated_at
-            FROM {$this->table}
-            WHERE role = 'kasir'
-            ORDER BY id DESC
-            LIMIT 100
-        ";
-
-        return $this->fetchAll($sql);
-    }
-
-    public function create(array $data): bool
-    {
-        return $this->createKasir($data) > 0;
-    }
-
     public function createKasir(array $data): int
     {
         // User dari sistem selalu kasir
@@ -144,11 +118,6 @@ class User extends Model
         ]);
 
         return $this->lastInsertId();
-    }
-
-    public function update(int $id, array $data): bool
-    {
-        return $this->updateKasir($id, $data);
     }
 
     public function updateKasir(int $id, array $data): bool
@@ -176,33 +145,6 @@ class User extends Model
             'username' => trim((string) $data['username']),
             'email' => trim((string) $data['email']),
             'status' => $data['status'] ?? 'aktif',
-            'id' => $id,
-        ]);
-
-        return true;
-    }
-
-    public function updateOwnProfile(int $id, array $data): bool
-    {
-        $user = $this->findById($id);
-
-        if (!$user) {
-            return false;
-        }
-
-        // Profil sendiri cuma ubah username dan email
-        $sql = "
-            UPDATE {$this->table}
-            SET 
-                username = :username,
-                email = :email
-            WHERE id = :id
-            LIMIT 1
-        ";
-
-        $this->execute($sql, [
-            'username' => trim((string) $data['username']),
-            'email' => trim((string) $data['email']),
             'id' => $id,
         ]);
 
@@ -257,11 +199,6 @@ class User extends Model
         ]);
 
         return true;
-    }
-
-    public function delete(int $id): bool
-    {
-        return $this->deleteOrDeactivate($id);
     }
 
     public function deleteOrDeactivate(int $id): bool
@@ -341,29 +278,6 @@ class User extends Model
         $sql .= " LIMIT 1";
 
         return $this->fetch($sql, $params) !== false;
-    }
-
-    public function countKasir(): int
-    {
-        $sql = "
-            SELECT COUNT(id)
-            FROM {$this->table}
-            WHERE role = 'kasir'
-        ";
-
-        return $this->countRows($sql);
-    }
-
-    public function countActiveKasir(): int
-    {
-        $sql = "
-            SELECT COUNT(id)
-            FROM {$this->table}
-            WHERE role = 'kasir'
-              AND status = 'aktif'
-        ";
-
-        return $this->countRows($sql);
     }
 
     public function countAll(): int

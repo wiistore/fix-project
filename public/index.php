@@ -80,7 +80,6 @@ $router->get('/kasir/dashboard', 'KasirController@dashboard');
 */
 
 $router->get('/kasir/profil', 'KasirController@profil');
-$router->post('/kasir/profil/update', 'KasirController@updateProfil');
 $router->post('/kasir/profil/password', 'KasirController@updatePassword');
 
 /*
@@ -95,7 +94,6 @@ $router->post('/admin/kategori/store', 'KategoriController@store');
 $router->get('/admin/kategori/edit/{id}', 'KategoriController@edit');
 $router->post('/admin/kategori/update/{id}', 'KategoriController@update');
 $router->post('/admin/kategori/delete/{id}', 'KategoriController@delete');
-$router->post('/admin/kategori/toggle/{id}', 'KategoriController@toggleStatus');
 
 /*
 |--------------------------------------------------------------------------
