@@ -109,6 +109,81 @@ flowchart LR
 
 ---
 
+## Panduan Include vs Extend (Penting)
+
+> Bagian ini menjelaskan aturan relasi UML supaya tidak salah pakai — terutama untuk CRUD.
+
+### Aturan Dasar
+
+| Relasi | Kapan dipakai | Arah panah | Sifat |
+|---|---|---|---|
+| `<<include>>` | Sub-proses **SELALU** dijalankan saat use case dasar dieksekusi | **dasar → use case yang di-include** | Wajib, tanpa syarat |
+| `<<extend>>` | Perilaku **tambahan/kondisional**, hanya muncul pada kondisi tertentu | **use case perluasan → use case dasar** | Opsional |
+
+Singkatnya: **include = selalu jalan**, **extend = kadang-kadang (opsional)**.
+
+### CRUD: include, extend, atau bukan keduanya?
+
+**Operasi CRUD (Tambah, Lihat, Edit, Hapus) secara teori UML BUKAN include dan BUKAN extend.** CRUD adalah operasi terpisah yang dipilih aktor, bukan sub-proses wajib (include) maupun tambahan kondisional (extend).
+
+Ada 2 cara pemodelan yang benar:
+
+**Opsi 1 (paling bersih, direkomendasikan):** Pecah jadi use case terpisah, dihubungkan **garis lurus langsung** ke aktor. Tidak ada parent "Kelola".
+
+```mermaid
+flowchart LR
+    Admin([Admin])
+    UC_A((Tambah Barang))
+    UC_B((Lihat Barang))
+    UC_C((Edit Barang))
+    UC_D((Hapus Barang))
+    Admin --- UC_A
+    Admin --- UC_B
+    Admin --- UC_C
+    Admin --- UC_D
+```
+
+**Opsi 2 (jika tetap mau ada parent "Kelola Barang"):** Gunakan `<<include>>`, dengan arah panah dari parent ke tiap operasi. Catatan: ini dekomposisi fungsional, bukan semantik include murni, tetapi umum diterima.
+
+```mermaid
+flowchart LR
+    Admin([Admin])
+    UC0((Kelola Barang))
+    UC_A((Tambah Barang))
+    UC_B((Lihat Barang))
+    UC_C((Edit Barang))
+    UC_D((Hapus Barang))
+    Admin --- UC0
+    UC0 -. include .-> UC_A
+    UC0 -. include .-> UC_B
+    UC0 -. include .-> UC_C
+    UC0 -. include .-> UC_D
+```
+
+> Jangan pakai `<<extend>>` untuk CRUD rutin — itu salah secara semantik.
+
+### Kesalahan Umum yang Harus Dihindari
+
+1. **Inkonsistensi relasi** — sub-use case yang sama tidak boleh di-`include` di satu tempat dan di-`extend` di tempat lain. Contoh kasus: Transaksi Penjualan sisi Kasir memakai `include`, tapi sisi Admin memakai `extend` untuk sub-use case yang identik. **Pilih satu jenis.**
+2. **Salah jenis pada Transaksi** — *Pilih Barang*, *Input Jumlah*, *Payment* adalah bagian **wajib** dari transaksi → harus `include`. Hanya *Cetak Struk* yang opsional → boleh `extend`.
+3. **Arah panah include terbalik** — harus dari **dasar → anak** (`Kelola Kategori → Tambah Kategori`), bukan sebaliknya.
+4. **Label duplikat** — pastikan tidak ada dua node bernama sama (mis. dua "Edit Kategori" padahal salah satunya seharusnya "Hapus Kategori").
+5. **Login per-aktor terpisah** — cukup satu use case `Login` yang dibagi (shared) oleh Admin & Kasir; tidak perlu "Login Admin" dan "Login Kasir" terpisah.
+
+### Penerapan pada Sistem Ini
+
+| Use Case Dasar | Relasi | Use Case Terkait | Alasan |
+|---|---|---|---|
+| Lakukan Transaksi | `include` | Pilih Barang, Input Jumlah, Payment | Selalu dijalankan dalam satu transaksi |
+| Lakukan Transaksi | `include` | Cetak Struk | Setelah sukses, selalu diarahkan ke struk |
+| Cetak Struk | `extend` | Cetak Struk PDF | Opsional (butuh Dompdf) |
+| Kelola Riwayat | `extend` | Batalkan / Edit Transaksi | Aksi opsional dari daftar |
+| Lihat Laporan | `extend` | Export Excel | Opsional |
+| Kelola Barang | `extend` | Cetak Label Barcode | Opsional dari data barang |
+| Kelola (CRUD apa pun) | `include` *(Opsi 2)* | Tambah / Lihat / Edit / Hapus | Dekomposisi operasi, bukan extend |
+
+---
+
 ## Use Case Diagram per Aktor
 
 ### A. Admin
