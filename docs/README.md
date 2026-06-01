@@ -1,52 +1,57 @@
 # Dokumentasi UML - Kopsis POS
 
 Sistem Point of Sale (POS) untuk Koperasi Siswa.
+Semua diagram menggunakan format **Mermaid** agar mudah diedit dan di-render langsung di GitHub, Mermaid Live Editor, atau VS Code.
 
 ## Daftar Diagram
 
 ### Use Case Diagram
-| File | Format | Deskripsi |
-|------|--------|-----------|
-| [use-case-diagram.puml](use-case-diagram.puml) | PlantUML | Use case lengkap untuk aktor Admin dan Kasir |
+| File | Deskripsi |
+|------|-----------|
+| [use-case-diagram.md](use-case-diagram.md) | Use case lengkap untuk aktor Admin dan Kasir (include & extend) |
 
 ### Sequence Diagram
-| File | Format | Deskripsi |
-|------|--------|-----------|
-| [sequence-diagram-login.puml](sequence-diagram-login.puml) | PlantUML | Alur proses login |
-| [sequence-diagram-transaksi.puml](sequence-diagram-transaksi.puml) | PlantUML | Alur proses transaksi penjualan (POS) |
-| [sequence-diagram-restock.puml](sequence-diagram-restock.puml) | PlantUML | Alur proses restock barang (masuk/keluar) |
-| [sequence-diagram-kasir-profil.puml](sequence-diagram-kasir-profil.puml) | PlantUML | Alur reset password kasir di halaman profil |
+| File | Deskripsi |
+|------|-----------|
+| [sequence-diagram-login.md](sequence-diagram-login.md) | Alur proses login |
+| [sequence-diagram-transaksi.md](sequence-diagram-transaksi.md) | Alur proses transaksi penjualan (POS) |
+| [sequence-diagram-restock.md](sequence-diagram-restock.md) | Alur proses restock barang (masuk/keluar) |
+| [sequence-diagram-kasir-profil.md](sequence-diagram-kasir-profil.md) | Alur reset password kasir di halaman profil |
 
 ### Activity Diagram
-| File | Format | Deskripsi |
-|------|--------|-----------|
-| [activity-diagram-login.puml](activity-diagram-login.puml) | PlantUML | Flowchart proses login |
-| [activity-diagram-transaksi.puml](activity-diagram-transaksi.puml) | PlantUML | Flowchart proses transaksi penjualan |
-| [activity-diagram-restock.puml](activity-diagram-restock.puml) | PlantUML | Flowchart proses restock stok masuk/keluar |
-| [activity-diagram-kasir-profil.puml](activity-diagram-kasir-profil.puml) | PlantUML | Flowchart reset password kasir |
-| [activity-diagram-batalkan-transaksi.puml](activity-diagram-batalkan-transaksi.puml) | PlantUML | Flowchart pembatalan (refund) transaksi |
+| File | Deskripsi |
+|------|-----------|
+| [activity-diagram-login.md](activity-diagram-login.md) | Flowchart proses login |
+| [activity-diagram-transaksi.md](activity-diagram-transaksi.md) | Flowchart proses transaksi penjualan |
+| [activity-diagram-restock.md](activity-diagram-restock.md) | Flowchart proses restock stok masuk/keluar |
+| [activity-diagram-kasir-profil.md](activity-diagram-kasir-profil.md) | Flowchart reset password kasir |
+| [activity-diagram-batalkan-transaksi.md](activity-diagram-batalkan-transaksi.md) | Flowchart pembatalan (refund) transaksi |
 
 ### Class Diagram
-| File | Format | Deskripsi |
-|------|--------|-----------|
-| [class-diagram.puml](class-diagram.puml) | PlantUML | Struktur class lengkap (Core, Controllers, Models, Middleware) |
+| File | Deskripsi |
+|------|-----------|
+| [class-diagram.md](class-diagram.md) | Struktur class lengkap (Core, Controllers, Models, Middleware) |
 
 ### Entity Relationship Diagram (ERD)
-| File | Format | Deskripsi |
-|------|--------|-----------|
-| [erd.md](erd.md) | Mermaid | ERD database dengan penjelasan relasi dan constraint |
+| File | Deskripsi |
+|------|-----------|
+| [erd.md](erd.md) | ERD database dengan penjelasan relasi dan constraint |
 
 ## Cara Render
 
-### PlantUML (.puml)
-1. **Online**: Paste kode ke [plantuml.com/plantuml](https://www.plantuml.com/plantuml/uml/)
-2. **VS Code**: Install extension "PlantUML" lalu preview dengan `Alt+D`
-3. **CLI**: `java -jar plantuml.jar docs/*.puml`
+### GitHub
+Otomatis! GitHub render Mermaid di preview markdown langsung.
 
-### Mermaid (.md)
-1. **GitHub**: Otomatis render di preview markdown GitHub
-2. **VS Code**: Install extension "Markdown Preview Mermaid Support"
-3. **Online**: Paste ke [mermaid.live](https://mermaid.live/)
+### Mermaid Live Editor (Online)
+1. Buka [mermaid.live](https://mermaid.live/)
+2. Paste kode Mermaid dari file `.md`
+3. Edit langsung, save gambar (PNG/SVG)
+
+### VS Code
+Install extension **"Markdown Preview Mermaid Support"** → preview langsung di editor.
+
+### draw.io
+Mermaid bisa di-import ke draw.io via menu **Extras > Edit Diagram** (paste kode).
 
 ## Catatan Penting
 
