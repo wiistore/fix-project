@@ -1,0 +1,175 @@
+@startuml Use Case Diagram - Kopsis POS
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+title Use Case Diagram\nSistem POS Koperasi Siswa (Kopsis)
+
+actor "Admin" as admin
+actor "Kasir" as kasir
+
+rectangle "Sistem POS Kopsis" {
+
+    ' === AUTH ===
+    package "Autentikasi" {
+        usecase "Login" as UC_LOGIN
+        usecase "Logout" as UC_LOGOUT
+    }
+
+    ' === ADMIN AREA ===
+    package "Manajemen Dashboard" {
+        usecase "Lihat Dashboard Admin" as UC_DASH_ADMIN
+        usecase "Lihat Dashboard Kasir" as UC_DASH_KASIR
+    }
+
+    package "Manajemen Barang" {
+        usecase "Lihat Daftar Barang" as UC_BARANG_LIST
+        usecase "Tambah Barang" as UC_BARANG_ADD
+        usecase "Edit Barang" as UC_BARANG_EDIT
+        usecase "Hapus/Nonaktifkan Barang" as UC_BARANG_DEL
+        usecase "Toggle Status Barang" as UC_BARANG_TOGGLE
+        usecase "Generate Barcode" as UC_BARANG_BARCODE
+        usecase "Cetak Label Barang" as UC_BARANG_LABEL
+    }
+
+    package "Manajemen Kategori" {
+        usecase "Lihat Daftar Kategori" as UC_KAT_LIST
+        usecase "Tambah Kategori" as UC_KAT_ADD
+        usecase "Edit Kategori" as UC_KAT_EDIT
+        usecase "Hapus Kategori" as UC_KAT_DEL
+    }
+
+    package "Manajemen Supplier" {
+        usecase "Lihat Daftar Supplier" as UC_SUP_LIST
+        usecase "Tambah Supplier" as UC_SUP_ADD
+        usecase "Edit Supplier" as UC_SUP_EDIT
+        usecase "Hapus/Nonaktifkan Supplier" as UC_SUP_DEL
+        usecase "Toggle Status Supplier" as UC_SUP_TOGGLE
+    }
+
+    package "Manajemen Restock" {
+        usecase "Lihat Riwayat Restock" as UC_RESTOCK_LIST
+        usecase "Tambah Stok Masuk" as UC_RESTOCK_IN
+        usecase "Kurangi Stok (Keluar)" as UC_RESTOCK_OUT
+    }
+
+    package "Manajemen User Kasir" {
+        usecase "Lihat Daftar User" as UC_USER_LIST
+        usecase "Tambah Kasir" as UC_USER_ADD
+        usecase "Edit Kasir" as UC_USER_EDIT
+        usecase "Reset Password Kasir" as UC_USER_RESET
+        usecase "Hapus/Nonaktifkan Kasir" as UC_USER_DEL
+        usecase "Toggle Status Kasir" as UC_USER_TOGGLE
+    }
+
+    package "Transaksi Penjualan" {
+        usecase "Buat Transaksi" as UC_TRX_CREATE
+        usecase "Lihat Struk" as UC_TRX_STRUK
+        usecase "Download PDF Struk" as UC_TRX_PDF
+    }
+
+    package "Riwayat Transaksi" {
+        usecase "Lihat Riwayat Transaksi" as UC_RIW_LIST
+        usecase "Lihat Detail Transaksi" as UC_RIW_DETAIL
+        usecase "Edit Transaksi" as UC_RIW_EDIT
+        usecase "Batalkan Transaksi" as UC_RIW_CANCEL
+    }
+
+    package "Laporan" {
+        usecase "Lihat Ringkasan Laporan" as UC_LAP_INDEX
+        usecase "Laporan Penjualan" as UC_LAP_JUAL
+        usecase "Laporan Laba" as UC_LAP_LABA
+        usecase "Laporan Barang Terlaris" as UC_LAP_TOP
+        usecase "Laporan Restock" as UC_LAP_RESTOCK
+        usecase "Export Laporan (CSV)" as UC_LAP_EXPORT
+    }
+
+    package "Profil Kasir" {
+        usecase "Lihat Profil" as UC_PROFIL_VIEW
+        usecase "Reset Password Sendiri" as UC_PROFIL_PW
+    }
+}
+
+' === ADMIN RELATIONS ===
+admin --> UC_LOGIN
+admin --> UC_LOGOUT
+admin --> UC_DASH_ADMIN
+
+admin --> UC_BARANG_LIST
+admin --> UC_BARANG_ADD
+admin --> UC_BARANG_EDIT
+admin --> UC_BARANG_DEL
+admin --> UC_BARANG_TOGGLE
+admin --> UC_BARANG_BARCODE
+admin --> UC_BARANG_LABEL
+
+admin --> UC_KAT_LIST
+admin --> UC_KAT_ADD
+admin --> UC_KAT_EDIT
+admin --> UC_KAT_DEL
+
+admin --> UC_SUP_LIST
+admin --> UC_SUP_ADD
+admin --> UC_SUP_EDIT
+admin --> UC_SUP_DEL
+admin --> UC_SUP_TOGGLE
+
+admin --> UC_RESTOCK_LIST
+admin --> UC_RESTOCK_IN
+admin --> UC_RESTOCK_OUT
+
+admin --> UC_USER_LIST
+admin --> UC_USER_ADD
+admin --> UC_USER_EDIT
+admin --> UC_USER_RESET
+admin --> UC_USER_DEL
+admin --> UC_USER_TOGGLE
+
+admin --> UC_TRX_CREATE
+admin --> UC_TRX_STRUK
+admin --> UC_TRX_PDF
+
+admin --> UC_RIW_LIST
+admin --> UC_RIW_DETAIL
+admin --> UC_RIW_EDIT
+admin --> UC_RIW_CANCEL
+
+admin --> UC_LAP_INDEX
+admin --> UC_LAP_JUAL
+admin --> UC_LAP_LABA
+admin --> UC_LAP_TOP
+admin --> UC_LAP_RESTOCK
+admin --> UC_LAP_EXPORT
+
+' === KASIR RELATIONS ===
+kasir --> UC_LOGIN
+kasir --> UC_LOGOUT
+kasir --> UC_DASH_KASIR
+
+kasir --> UC_TRX_CREATE
+kasir --> UC_TRX_STRUK
+kasir --> UC_TRX_PDF
+
+kasir --> UC_PROFIL_VIEW
+kasir --> UC_PROFIL_PW
+
+' === NOTES ===
+note right of UC_PROFIL_PW
+  Kasir hanya bisa reset password.
+  Username & email TIDAK bisa diedit.
+  Harus input password lama.
+end note
+
+note right of UC_RIW_CANCEL
+  Membatalkan transaksi akan
+  mengembalikan stok barang
+  secara otomatis.
+end note
+
+note right of UC_RESTOCK_OUT
+  Wajib input alasan
+  pengurangan stok.
+end note
+
+@enduml

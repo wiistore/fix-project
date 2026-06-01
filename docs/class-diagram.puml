@@ -1,0 +1,392 @@
+@startuml Class Diagram - Kopsis POS
+
+title Class Diagram\nSistem POS Koperasi Siswa
+
+skinparam classAttributeIconSize 0
+
+' ============ CORE ============
+package "Core" {
+    abstract class Model {
+        # db : PDO
+        - {static} connection : PDO
+        + __construct()
+        + db() : PDO
+        # query(sql, params) : PDOStatement
+        # fetchAll(sql, params) : array
+        # fetch(sql, params) : mixed
+        # execute(sql, params) : bool
+        # countRows(sql, params) : int
+        # lastInsertId() : int
+        # beginTransaction() : void
+        # commit() : void
+        # rollBack() : void
+        # transaction(callback) : mixed
+        - {static} connect() : PDO
+    }
+
+    class Controller {
+        # view(path, data) : void
+        # model(modelName) : object
+        # redirect(url) : void
+        # requireLogin() : void
+        # requireRole(roles) : void
+        - viewPath(path) : string
+    }
+
+    class Router {
+        - routes : array
+        + get(uri, action) : void
+        + post(uri, action) : void
+        + run() : void
+        - addRoute(method, uri, action) : void
+        - dispatch(action, params) : void
+        - makePattern(uri) : string
+        - getCurrentUri() : string
+        - normalizeUri(uri) : string
+        - abort(statusCode, message) : void
+    }
+
+    class Session {
+        - {static} started : bool
+        + {static} start() : void
+        + {static} set(key, value) : void
+        + {static} get(key, default) : mixed
+        + {static} has(key) : bool
+        + {static} remove(key) : void
+        + {static} destroy() : void
+        + {static} regenerate() : void
+        + {static} setFlash(key, message) : void
+        + {static} getFlash(key) : ?string
+        + {static} login(user) : void
+        + {static} logout() : void
+        + {static} isLoggedIn() : bool
+        + {static} user() : ?array
+        + {static} userId() : ?int
+        + {static} role() : ?string
+    }
+
+    class Security {
+        + {static} e(value) : string
+        + {static} passwordHash(password) : string
+        + {static} passwordVerify(password, hash) : bool
+        + {static} rupiah(value) : string
+    }
+
+    class Validator {
+        + {static} validate(data, rules) : array
+        + {static} in(value, options) : bool
+    }
+
+    class Response {
+        + {static} redirect(url) : void
+        + {static} abort(code, message) : void
+        + {static} json(data, code) : void
+    }
+}
+
+' ============ CONTROLLERS ============
+package "Controllers" {
+    class AuthController {
+        - userModel : User
+        + loginForm() : void
+        + login() : void
+        + logout() : void
+        - redirectByRole(role) : void
+    }
+
+    class AdminController {
+        - dashboardModel : Dashboard
+        + dashboard() : void
+    }
+
+    class KasirController {
+        - dashboardModel : Dashboard
+        - userModel : User
+        + dashboard() : void
+        + profil() : void
+        + updatePassword() : void
+    }
+
+    class BarangController {
+        - barangModel : Barang
+        - kategoriModel : Kategori
+        + index() : void
+        + create() : void
+        + store() : void
+        + edit(id) : void
+        + update(id) : void
+        + delete(id) : void
+        + toggleStatus(id) : void
+        + generateBarcodeAjax() : void
+        + label(id) : void
+        + labelBulk() : void
+    }
+
+    class KategoriController {
+        - kategoriModel : Kategori
+        + index() : void
+        + create() : void
+        + store() : void
+        + edit(id) : void
+        + update(id) : void
+        + delete(id) : void
+    }
+
+    class SupplierController {
+        - supplierModel : Supplier
+        + index() : void
+        + create() : void
+        + store() : void
+        + edit(id) : void
+        + update(id) : void
+        + delete(id) : void
+        + toggleStatus(id) : void
+    }
+
+    class RestockController {
+        - restockModel : Restock
+        - barangModel : Barang
+        - supplierModel : Supplier
+        + index() : void
+        + create() : void
+        + store() : void
+        - validatePayload(data) : array
+    }
+
+    class TransaksiController {
+        - transaksiModel : Transaksi
+        - detailModel : DetailTransaksi
+        - barangModel : Barang
+        - restockModel : Restock
+        + adminIndex() : void
+        + kasirIndex() : void
+        + store() : void
+        + adminStruk(id) : void
+        + kasirStruk(id) : void
+        + adminPdf(id) : void
+        + kasirPdf(id) : void
+        - normalizeCart(json) : array
+        - validateTransactionInput(items, metode, nominal) : array
+        - prepareItems(items) : array
+        - downloadPdf(id, role) : void
+        - paymentMethods() : array
+    }
+
+    class RiwayatController {
+        - transaksiModel : Transaksi
+        - detailModel : DetailTransaksi
+        - barangModel : Barang
+        - restockModel : Restock
+        + adminIndex() : void
+        + adminDetail(id) : void
+        + edit(id) : void
+        + update(id) : void
+        + cancel(id) : void
+        - parseEditCart(json) : array
+        - prepareEditItems(items) : array
+        - makeSummary(transaksis) : array
+    }
+
+    class UserController {
+        - userModel : User
+        + index() : void
+        + create() : void
+        + store() : void
+        + edit(id) : void
+        + update(id) : void
+        + resetPassword(id) : void
+        + updatePassword(id) : void
+        + delete(id) : void
+        + toggleStatus(id) : void
+    }
+
+    class LaporanController {
+        - laporanModel : Laporan
+        + index() : void
+        + penjualan() : void
+        + laba() : void
+        + barangTerlaris() : void
+        + restock() : void
+        + exportRingkasan() : void
+        + exportPenjualan() : void
+        + exportLaba() : void
+        + exportBarangTerlaris() : void
+        + exportRestock() : void
+    }
+}
+
+' ============ MODELS ============
+package "Models" {
+    class User {
+        - table : string = "users"
+        + findByUsername(username) : mixed
+        + findById(id) : mixed
+        + findByIdWithPassword(id) : mixed
+        + getAll() : array
+        + createKasir(data) : int
+        + updateKasir(id, data) : bool
+        + resetPassword(id, password) : bool
+        + updateOwnPassword(id, password) : bool
+        + deleteOrDeactivate(id) : bool
+        + usernameExists(username, exceptId) : bool
+        + emailExists(email, exceptId) : bool
+        + countAll() : int
+        + getPaginated(page, perPage) : array
+        + hasTransactions(id) : bool
+    }
+
+    class Barang {
+        - table : string = "barang"
+        + getAll() : array
+        + getActive() : array
+        + findById(id) : mixed
+        + findActiveById(id) : mixed
+        + create(data) : bool
+        + update(id, data) : bool
+        + updateHargaJual(id, harga) : bool
+        + updateStatus(id, status) : bool
+        + deleteOrDeactivate(id) : bool
+        + increaseStock(id, qty) : bool
+        + decreaseStock(id, qty) : bool
+        + kodeExists(kode, exceptId) : bool
+        + barcodeExists(barcode, exceptId) : bool
+        + generateNextBarcode(prefix, padLength) : string
+        + findManyByIds(ids) : array
+        + hasHistory(id) : bool
+        + summary() : array
+        + countAll() : int
+        + getPaginated(page, perPage) : array
+    }
+
+    class Transaksi {
+        - table : string = "transaksi"
+        + create(data) : int
+        + findById(id) : mixed
+        + getByDateRange(start, end, limit) : array
+        + generateCode() : string
+        + kodeExists(kode) : bool
+        + updateStatus(id, status, alasan) : bool
+        + updateTotals(id, totals) : bool
+        + updateMetodeBayar(id, metode) : bool
+        + isValidPaymentMethod(method) : bool
+        + getPaginated(page, perPage) : array
+        + countAll() : int
+    }
+
+    class DetailTransaksi {
+        - table : string = "detail_transaksi"
+        + create(data) : int
+        + getByTransaksiId(id) : array
+        + getItemsWithBarang(id) : array
+        + deleteByTransaksiId(id) : bool
+        + summaryByTransaksiId(id) : array
+    }
+
+    class Restock {
+        - table : string = "restock"
+        + create(data) : int
+        + getLastHargaBeli(idBarang) : float
+        + getFiltered(start, end, tipe) : array
+        + summary(start, end, tipe) : array
+        + countAll() : int
+        + getPaginated(page, perPage) : array
+    }
+
+    class Supplier {
+        - table : string = "supplier"
+        + getAll() : array
+        + getActive() : array
+        + findById(id) : mixed
+        + create(data) : bool
+        + update(id, data) : bool
+        + deleteOrDeactivate(id) : bool
+        + countAll() : int
+        + getPaginated(page, perPage) : array
+    }
+
+    class Kategori {
+        - table : string = "kategori"
+        + getAll() : array
+        + findById(id) : mixed
+        + create(data) : int
+        + update(id, data) : bool
+        + delete(id) : bool
+        + hasBarang(id) : bool
+    }
+
+    class Dashboard {
+        + adminSummary() : array
+        + kasirSummary(userId) : array
+    }
+
+    class Laporan {
+        + ringkasan(start, end) : array
+        + penjualan(start, end) : array
+        + laba(start, end) : array
+        + barangTerlaris(start, end, limit) : array
+        + restock(start, end) : array
+    }
+}
+
+' ============ MIDDLEWARE ============
+package "Middleware" {
+    class AuthMiddleware {
+        + {static} handle() : void
+    }
+
+    class AdminMiddleware {
+        + {static} handle() : void
+    }
+
+    class KasirMiddleware {
+        + {static} handle() : void
+    }
+}
+
+' ============ INHERITANCE ============
+Controller <|-- AuthController
+Controller <|-- AdminController
+Controller <|-- KasirController
+Controller <|-- BarangController
+Controller <|-- KategoriController
+Controller <|-- SupplierController
+Controller <|-- RestockController
+Controller <|-- TransaksiController
+Controller <|-- RiwayatController
+Controller <|-- UserController
+Controller <|-- LaporanController
+
+Model <|-- User
+Model <|-- Barang
+Model <|-- Transaksi
+Model <|-- DetailTransaksi
+Model <|-- Restock
+Model <|-- Supplier
+Model <|-- Kategori
+Model <|-- Dashboard
+Model <|-- Laporan
+
+' ============ DEPENDENCIES ============
+AuthController ..> User : uses
+AdminController ..> Dashboard : uses
+KasirController ..> Dashboard : uses
+KasirController ..> User : uses
+BarangController ..> Barang : uses
+BarangController ..> Kategori : uses
+KategoriController ..> Kategori : uses
+SupplierController ..> Supplier : uses
+RestockController ..> Restock : uses
+RestockController ..> Barang : uses
+RestockController ..> Supplier : uses
+TransaksiController ..> Transaksi : uses
+TransaksiController ..> DetailTransaksi : uses
+TransaksiController ..> Barang : uses
+TransaksiController ..> Restock : uses
+RiwayatController ..> Transaksi : uses
+RiwayatController ..> DetailTransaksi : uses
+RiwayatController ..> Barang : uses
+RiwayatController ..> Restock : uses
+UserController ..> User : uses
+LaporanController ..> Laporan : uses
+
+@enduml

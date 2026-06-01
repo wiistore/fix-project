@@ -1,0 +1,73 @@
+@startuml Sequence Diagram - Restock Barang
+
+title Sequence Diagram: Proses Restock (Stok Masuk/Keluar)
+
+actor "Admin" as admin
+participant "Browser" as browser
+participant "Router" as router
+participant "RestockController" as ctrl
+participant "Restock Model" as rstModel
+participant "Barang Model" as brgModel
+participant "Supplier Model" as supModel
+participant "Session" as session
+database "Database" as db
+
+== Form Restock ==
+admin -> browser : Buka /admin/restock/create?tipe=masuk
+browser -> router : GET /admin/restock/create
+router -> ctrl : create()
+ctrl -> ctrl : requireRole('admin')
+ctrl -> brgModel : getActive()
+ctrl -> supModel : getActive()
+ctrl --> browser : Render form restock
+
+== Proses Simpan Restock ==
+admin -> browser : Isi form (barang, supplier, qty, harga beli)
+admin -> browser : Klik "Simpan"
+
+browser -> router : POST /admin/restock/store
+router -> ctrl : store()
+ctrl -> ctrl : requireRole('admin')
+ctrl -> ctrl : validatePayload(data)
+
+alt Validasi gagal
+    ctrl -> session : set('_errors', errors)
+    ctrl --> browser : Redirect kembali ke form
+else Validasi berhasil
+    ctrl -> brgModel : findActiveById(id_barang)
+    brgModel -> db : SELECT
+    db --> brgModel : data barang
+
+    alt Tipe = masuk
+        ctrl -> supModel : findById(id_supplier)
+        supModel -> db : SELECT supplier
+        db --> supModel : data supplier
+    else Tipe = keluar
+        ctrl -> ctrl : Cek stok >= qty keluar
+    end
+
+    ctrl -> db : beginTransaction()
+
+    ctrl -> rstModel : create(restock data)
+    rstModel -> db : INSERT INTO restock
+    db --> rstModel : restock_id
+
+    alt Tipe = masuk
+        ctrl -> brgModel : increaseStock(id, qty)
+        brgModel -> db : UPDATE stok = stok + qty
+
+        opt Harga jual baru diisi
+            ctrl -> brgModel : updateHargaJual(id, harga_baru)
+            brgModel -> db : UPDATE harga_jual
+        end
+    else Tipe = keluar
+        ctrl -> brgModel : decreaseStock(id, qty)
+        brgModel -> db : UPDATE stok = stok - qty
+    end
+
+    ctrl -> db : commit()
+    ctrl -> session : setFlash('success', '...')
+    ctrl --> browser : Redirect /admin/restock
+end
+
+@enduml

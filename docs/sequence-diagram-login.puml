@@ -1,0 +1,64 @@
+@startuml Sequence Diagram - Login
+
+title Sequence Diagram: Proses Login
+
+actor "User\n(Admin/Kasir)" as user
+participant "Browser" as browser
+participant "Router" as router
+participant "AuthController" as auth
+participant "User Model" as model
+participant "Security" as sec
+participant "Session" as session
+database "Database\n(MySQL)" as db
+
+user -> browser : Buka halaman /login
+browser -> router : GET /login
+router -> auth : loginForm()
+auth -> session : isLoggedIn()
+session --> auth : false
+auth --> browser : Render form login
+
+user -> browser : Submit username & password
+browser -> router : POST /login
+router -> auth : login()
+
+auth -> auth : Validasi input kosong?
+alt Input kosong
+    auth -> session : setFlash('error', '...')
+    auth --> browser : Redirect /login
+else Input terisi
+    auth -> model : findByUsername(username)
+    model -> db : SELECT ... WHERE username = ?
+    db --> model : data user / null
+
+    alt User tidak ditemukan
+        auth -> session : setFlash('error', 'Username atau password salah')
+        auth --> browser : Redirect /login
+    else User ditemukan
+        auth -> sec : passwordVerify(password, hash)
+        sec --> auth : true/false
+
+        alt Password salah
+            auth -> session : setFlash('error', 'Username atau password salah')
+            auth --> browser : Redirect /login
+        else Password benar
+            auth -> auth : Cek status == 'aktif'?
+            alt Status nonaktif
+                auth -> session : setFlash('error', 'Akun nonaktif')
+                auth --> browser : Redirect /login
+            else Status aktif
+                auth -> auth : Cek role valid (admin/kasir)?
+                auth -> session : login(user)
+                session -> session : regenerate session ID
+
+                alt Role = admin
+                    auth --> browser : Redirect /admin/dashboard
+                else Role = kasir
+                    auth --> browser : Redirect /kasir/dashboard
+                end
+            end
+        end
+    end
+end
+
+@enduml
