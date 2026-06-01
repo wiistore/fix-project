@@ -1,4 +1,6 @@
-# Class Diagram - Kopsis POS
+# Class Diagram — Kopsis POS
+
+---
 
 ## Diagram
 
@@ -165,7 +167,7 @@ classDiagram
         +adminPdf(id) void
         +kasirPdf(id) void
         -normalizeCart(json) array
-        -validateTransactionInput(items, metode, nominal) array
+        -validateTransactionInput() array
         -prepareItems(items) array
         -downloadPdf(id, role) void
         -paymentMethods() array
@@ -215,7 +217,7 @@ classDiagram
 
     %% ============ MODELS ============
     class User {
-        -string table = "users"
+        -string table
         +findByUsername(username) mixed
         +findById(id) mixed
         +findByIdWithPassword(id) mixed
@@ -233,7 +235,7 @@ classDiagram
     }
 
     class Barang {
-        -string table = "barang"
+        -string table
         +getAll() array
         +getActive() array
         +findById(id) mixed
@@ -247,7 +249,7 @@ classDiagram
         +decreaseStock(id, qty) bool
         +kodeExists(kode, exceptId) bool
         +barcodeExists(barcode, exceptId) bool
-        +generateNextBarcode(prefix, padLength) string
+        +generateNextBarcode(prefix, pad) string
         +findManyByIds(ids) array
         +hasHistory(id) bool
         +summary() array
@@ -256,7 +258,7 @@ classDiagram
     }
 
     class Transaksi {
-        -string table = "transaksi"
+        -string table
         +create(data) int
         +findById(id) mixed
         +getByDateRange(start, end, limit) array
@@ -271,7 +273,7 @@ classDiagram
     }
 
     class DetailTransaksi {
-        -string table = "detail_transaksi"
+        -string table
         +create(data) int
         +getByTransaksiId(id) array
         +getItemsWithBarang(id) array
@@ -280,7 +282,7 @@ classDiagram
     }
 
     class Restock {
-        -string table = "restock"
+        -string table
         +create(data) int
         +getLastHargaBeli(idBarang) float
         +getFiltered(start, end, tipe) array
@@ -290,7 +292,7 @@ classDiagram
     }
 
     class Supplier {
-        -string table = "supplier"
+        -string table
         +getAll() array
         +getActive() array
         +findById(id) mixed
@@ -302,7 +304,7 @@ classDiagram
     }
 
     class Kategori {
-        -string table = "kategori"
+        -string table
         +getAll() array
         +findById(id) mixed
         +create(data) int
@@ -328,11 +330,9 @@ classDiagram
     class AuthMiddleware {
         +handle()$ void
     }
-
     class AdminMiddleware {
         +handle()$ void
     }
-
     class KasirMiddleware {
         +handle()$ void
     }
@@ -383,3 +383,23 @@ classDiagram
     UserController ..> User : uses
     LaporanController ..> Laporan : uses
 ```
+
+---
+
+## Keterangan
+
+### Layer Architecture
+
+| Layer | Class | Tanggung Jawab |
+|-------|-------|----------------|
+| **Core** | Model, Controller, Router, Session, Security, Validator, Response | Framework inti: DB, routing, session, keamanan |
+| **Controllers** | AuthController, AdminController, KasirController, dll. | Handle request, validasi, koordinasi model & view |
+| **Models** | User, Barang, Transaksi, DetailTransaksi, Restock, Supplier, Kategori, Dashboard, Laporan | Akses database, business logic |
+| **Middleware** | AuthMiddleware, AdminMiddleware, KasirMiddleware | Proteksi akses berdasarkan role |
+
+### Relasi
+
+| Simbol | Arti |
+|--------|------|
+| `<\|--` | Inheritance (extends) |
+| `..>` | Dependency (uses) |

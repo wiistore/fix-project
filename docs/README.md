@@ -1,61 +1,58 @@
-# Dokumentasi UML - Kopsis POS
+# Dokumentasi UML — Kopsis POS
 
 Sistem Point of Sale (POS) untuk Koperasi Siswa.
-Semua diagram menggunakan format **Mermaid** agar mudah diedit dan di-render langsung di GitHub, Mermaid Live Editor, atau VS Code.
+Semua diagram menggunakan format **Mermaid** — bisa langsung di-render di GitHub, [Mermaid Live Editor](https://mermaid.live/), draw.io, atau VS Code.
 
-## Daftar Diagram
+---
 
-### Use Case Diagram
-| File | Deskripsi |
-|------|-----------|
-| [use-case-diagram.md](use-case-diagram.md) | Use case lengkap untuk aktor Admin dan Kasir (include & extend) |
+## Struktur Dokumen (Per Fitur)
 
-### Sequence Diagram
-| File | Deskripsi |
-|------|-----------|
-| [sequence-diagram-login.md](sequence-diagram-login.md) | Alur proses login |
-| [sequence-diagram-transaksi.md](sequence-diagram-transaksi.md) | Alur proses transaksi penjualan (POS) |
-| [sequence-diagram-restock.md](sequence-diagram-restock.md) | Alur proses restock barang (masuk/keluar) |
-| [sequence-diagram-kasir-profil.md](sequence-diagram-kasir-profil.md) | Alur reset password kasir di halaman profil |
+| No | File | Fitur | Isi |
+|----|------|-------|-----|
+| 1 | [data-master.md](data-master.md) | **Data Master** (Barang, Kategori, Supplier, User) | Use Case, Sequence, Activity |
+| 2 | [restock.md](restock.md) | **Restock** (Stok Masuk & Keluar) | Use Case, Sequence, Activity |
+| 3 | [transaksi.md](transaksi.md) | **Transaksi Penjualan** (POS) | Use Case, Sequence, Activity |
+| 4 | [laporan.md](laporan.md) | **Laporan** (Penjualan, Laba, Terlaris, Restock, Export) | Use Case, Sequence, Activity |
+| 5 | [riwayat-transaksi.md](riwayat-transaksi.md) | **Riwayat Transaksi** (Refund & Edit) | Use Case, Sequence, Activity |
 
-### Activity Diagram
-| File | Deskripsi |
-|------|-----------|
-| [activity-diagram-login.md](activity-diagram-login.md) | Flowchart proses login |
-| [activity-diagram-transaksi.md](activity-diagram-transaksi.md) | Flowchart proses transaksi penjualan |
-| [activity-diagram-restock.md](activity-diagram-restock.md) | Flowchart proses restock stok masuk/keluar |
-| [activity-diagram-kasir-profil.md](activity-diagram-kasir-profil.md) | Flowchart reset password kasir |
-| [activity-diagram-batalkan-transaksi.md](activity-diagram-batalkan-transaksi.md) | Flowchart pembatalan (refund) transaksi |
+---
 
-### Class Diagram
-| File | Deskripsi |
-|------|-----------|
-| [class-diagram.md](class-diagram.md) | Struktur class lengkap (Core, Controllers, Models, Middleware) |
+## Diagram Tambahan
 
-### Entity Relationship Diagram (ERD)
-| File | Deskripsi |
-|------|-----------|
-| [erd.md](erd.md) | ERD database dengan penjelasan relasi dan constraint |
+| No | File | Tipe Diagram | Keterangan |
+|----|------|-------------|------------|
+| 6 | [erd.md](erd.md) | **ERD** | Entity Relationship Diagram + penjelasan relasi & constraint |
+| 7 | [dfd.md](dfd.md) | **DFD Level 0 & 1** | Context Diagram + Data Flow Detail |
+| 8 | [class-diagram.md](class-diagram.md) | **Class Diagram** | Core, Controllers, Models, Middleware |
 
-## Cara Render
+---
+
+## Cara Render / Edit
 
 ### GitHub
-Otomatis! GitHub render Mermaid di preview markdown langsung.
+Otomatis render. Langsung buka file `.md` di GitHub dan diagram muncul.
 
-### Mermaid Live Editor (Online)
+### Mermaid Live Editor (Rekomendasi untuk edit)
 1. Buka [mermaid.live](https://mermaid.live/)
-2. Paste kode Mermaid dari file `.md`
-3. Edit langsung, save gambar (PNG/SVG)
+2. Paste kode Mermaid dari file
+3. Edit langsung di browser
+4. **Save gambar**: Actions → Export PNG / SVG
 
 ### VS Code
-Install extension **"Markdown Preview Mermaid Support"** → preview langsung di editor.
+Install extension **"Markdown Preview Mermaid Support"** → preview langsung.
 
 ### draw.io
-Mermaid bisa di-import ke draw.io via menu **Extras > Edit Diagram** (paste kode).
+Import Mermaid via menu **Extras → Edit Diagram** (paste kode).
 
-## Catatan Penting
+---
 
-- **Profil Kasir**: Kasir hanya bisa reset password sendiri. Username dan email TIDAK bisa diedit oleh kasir (hanya Admin via menu User Management).
-- **Pembatalan Transaksi**: Hanya Admin yang bisa membatalkan. Stok otomatis dikembalikan.
-- **Restock Keluar**: Wajib mengisi alasan pengurangan stok.
-- **Protected User**: Admin utama (is_protected=1) tidak bisa diedit/dihapus dari menu user.
+## Catatan Penting Sistem
+
+| Rule | Keterangan |
+|------|------------|
+| Kasir hanya bisa reset password | Username & email TIDAK bisa diedit oleh kasir |
+| Pembatalan transaksi | Hanya Admin, wajib input alasan, stok otomatis dikembalikan |
+| Edit transaksi | Hanya Admin, stok lama dikembalikan lalu stok baru dikurangi |
+| Restock keluar | Wajib input alasan pengurangan stok |
+| Protected user | Admin utama (is_protected=1) tidak bisa diedit/dihapus |
+| Database transaction | Semua operasi stok berjalan atomik (commit/rollback) |
