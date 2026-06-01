@@ -1,35 +1,34 @@
 # Activity Diagram: Profile Kasir
 
-```mermaid
-flowchart TD
-    Start([●]) --> Login
+```plantuml
+@startuml
+title Activity Diagram - Profile Kasir
 
-    subgraph Kasir
-        Login[Login]
-        PilihMenu[Pilih Menu Profile]
-        PilihAksi{Pilih Aksi}
-        InputPassword[Input Password Baru]
-        KonfirmasiPassword[Konfirmasi Password Baru]
-    end
+|Kasir|
+start
+:Login;
+:Pilih Menu Profile;
 
-    subgraph Sistem
-        TampilProfil[Tampilkan Data Profil]
-        ValidasiPassword{Validasi Password}
-        SimpanPassword[Simpan Password Baru]
-        TampilPesan[Tampilkan Pesan Berhasil]
-        Logout[Logout]
-    end
+|Sistem|
+:Tampilkan Data Profil;
 
-    Login --> PilihMenu
-    PilihMenu --> TampilProfil
-    TampilProfil --> PilihAksi
+|Kasir|
+:Klik Reset Password;
+:Input Password Baru;
+:Konfirmasi Password Baru;
 
-    PilihAksi -- Reset Password --> InputPassword
-    InputPassword --> KonfirmasiPassword
-    KonfirmasiPassword --> ValidasiPassword
-    ValidasiPassword -- Tidak Cocok --> InputPassword
-    ValidasiPassword -- Berhasil --> SimpanPassword
-    SimpanPassword --> TampilPesan
-    TampilPesan --> Logout
-    Logout --> End([●])
+|Sistem|
+if (Validasi Password) then (Cocok)
+  :Simpan Password Baru;
+  :Tampilkan Pesan Berhasil;
+else (Tidak Cocok)
+  |Kasir|
+  :Input Password Baru;
+  detach
+endif
+
+|Kasir|
+:Logout;
+stop
+@enduml
 ```

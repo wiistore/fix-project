@@ -1,34 +1,37 @@
 # Sequence Diagram: Penyesuaian Stok
 
-```mermaid
-sequenceDiagram
-    actor Admin
-    participant Sistem
-    participant DB
+```plantuml
+@startuml
+title Sequence Diagram - Penyesuaian Stok
 
-    Admin->>Sistem: Login (username, password)
-    Sistem->>DB: Validasi kredensial
-    DB-->>Sistem: Data user valid
-    Sistem-->>Admin: Redirect ke Dashboard
+actor Admin
+participant Sistem
+database DB
 
-    Admin->>Sistem: Buka Menu Penyesuaian Stok
-    Sistem->>DB: Ambil daftar barang
-    DB-->>Sistem: Data barang
-    Sistem-->>Admin: Tampilkan Daftar Barang
+Admin -> Sistem: Login (username, password)
+Sistem -> DB: Validasi kredensial
+DB --> Sistem: Data user valid
+Sistem --> Admin: Redirect ke Dashboard
 
-    Admin->>Sistem: Pilih Barang & Pilih Aksi (Tambah/Kurangi)
-    Admin->>Sistem: Input Jumlah & Keterangan
-    Sistem->>Sistem: Validasi Input
+Admin -> Sistem: Buka Menu Penyesuaian Stok
+Sistem -> DB: Ambil daftar barang
+DB --> Sistem: Data barang
+Sistem --> Admin: Tampilkan Daftar Barang
 
-    alt Validasi Gagal
-        Sistem-->>Admin: Tampilkan Pesan Error
-    else Validasi Berhasil
-        Sistem->>DB: Update Stok Barang
-        Sistem->>DB: Simpan Riwayat Restock
-        DB-->>Sistem: Konfirmasi tersimpan
-        Sistem-->>Admin: Tampilkan Pesan Berhasil
-    end
+Admin -> Sistem: Pilih Barang & Pilih Aksi (Tambah/Kurangi)
+Admin -> Sistem: Input Jumlah & Keterangan
+Sistem -> Sistem: Validasi Input
 
-    Admin->>Sistem: Logout
-    Sistem-->>Admin: Redirect ke Halaman Login
+alt Validasi Gagal
+  Sistem --> Admin: Tampilkan Pesan Error
+else Validasi Berhasil
+  Sistem -> DB: Update Stok Barang
+  Sistem -> DB: Simpan Riwayat Restock
+  DB --> Sistem: Konfirmasi tersimpan
+  Sistem --> Admin: Tampilkan Pesan Berhasil
+end
+
+Admin -> Sistem: Logout
+Sistem --> Admin: Redirect ke Halaman Login
+@enduml
 ```

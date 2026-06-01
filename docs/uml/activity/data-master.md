@@ -2,43 +2,41 @@
 
 > Mencakup: Barang, Kategori, Supplier, User
 
-```mermaid
-flowchart TD
-    Start([●]) --> Login
+```plantuml
+@startuml
+title Activity Diagram - Data Master
 
-    subgraph Admin
-        Login[Login]
-        PilihMenu[Pilih Menu Data Master]
-        PilihEntitas[Pilih Entitas\nBarang / Kategori / Supplier / User]
-        PilihAksi{Pilih Aksi}
-        IsiForm[Isi Form Data]
-        Konfirmasi[Konfirmasi Hapus]
-    end
+|Admin|
+start
+:Login;
+:Pilih Menu Data Master;
+:Pilih Entitas\n(Barang / Kategori / Supplier / User);
 
-    subgraph Sistem
-        TampilList[Tampilkan Daftar Data]
-        ValidasiInput{Validasi Input}
-        SimpanData[Simpan Data]
-        TampilPesan[Tampilkan Pesan Berhasil]
-        HapusData[Hapus Data]
-        Logout[Logout]
-    end
+|Sistem|
+:Tampilkan Daftar Data;
 
-    Login --> PilihMenu
-    PilihMenu --> PilihEntitas
-    PilihEntitas --> TampilList
-    TampilList --> PilihAksi
+|Admin|
+switch (Pilih Aksi)
+case (Tambah / Edit)
+  :Isi Form Data;
+  |Sistem|
+  if (Validasi Input) then (Berhasil)
+    :Simpan Data;
+    :Tampilkan Pesan Berhasil;
+  else (Gagal)
+    |Admin|
+    :Isi Form Data;
+    detach
+  endif
+case (Hapus)
+  :Konfirmasi Hapus;
+  |Sistem|
+  :Hapus Data;
+  :Tampilkan Pesan Berhasil;
+endswitch
 
-    PilihAksi -- Tambah/Edit --> IsiForm
-    IsiForm --> ValidasiInput
-    ValidasiInput -- Gagal --> IsiForm
-    ValidasiInput -- Berhasil --> SimpanData
-    SimpanData --> TampilPesan
-
-    PilihAksi -- Hapus --> Konfirmasi
-    Konfirmasi --> HapusData
-    HapusData --> TampilPesan
-
-    TampilPesan --> Logout
-    Logout --> End([●])
+|Admin|
+:Logout;
+stop
+@enduml
 ```

@@ -1,41 +1,40 @@
 # Activity Diagram: Penyesuaian Stok
 
-```mermaid
-flowchart TD
-    Start([●]) --> Login
+```plantuml
+@startuml
+title Activity Diagram - Penyesuaian Stok
 
-    subgraph Admin
-        Login[Login]
-        PilihMenu[Pilih Menu Penyesuaian Stok]
-        PilihBarang[Pilih Barang]
-        PilihAksi{Pilih Aksi}
-        InputJumlah[Input Jumlah]
-        InputAlasan[Input Alasan / Keterangan]
-    end
+|Admin|
+start
+:Login;
+:Pilih Menu Penyesuaian Stok;
 
-    subgraph Sistem
-        TampilDaftar[Tampilkan Daftar Barang]
-        ValidasiStok{Validasi Stok}
-        UpdateStok[Update Stok Barang]
-        SimpanRiwayat[Simpan Riwayat Restock]
-        TampilPesan[Tampilkan Pesan Berhasil]
-        Logout[Logout]
-    end
+|Sistem|
+:Tampilkan Daftar Barang;
 
-    Login --> PilihMenu
-    PilihMenu --> TampilDaftar
-    TampilDaftar --> PilihBarang
-    PilihBarang --> PilihAksi
+|Admin|
+:Pilih Barang;
+switch (Pilih Aksi)
+case (Tambah Stok)
+  :Input Jumlah;
+case (Kurangi Stok)
+  :Input Jumlah;
+endswitch
+:Input Alasan / Keterangan;
 
-    PilihAksi -- Tambah Stok --> InputJumlah
-    PilihAksi -- Kurangi Stok --> InputJumlah
+|Sistem|
+if (Validasi Stok) then (Berhasil)
+  :Update Stok Barang;
+  :Simpan Riwayat Restock;
+  :Tampilkan Pesan Berhasil;
+else (Gagal)
+  |Admin|
+  :Input Jumlah;
+  detach
+endif
 
-    InputJumlah --> InputAlasan
-    InputAlasan --> ValidasiStok
-    ValidasiStok -- Gagal --> InputJumlah
-    ValidasiStok -- Berhasil --> UpdateStok
-    UpdateStok --> SimpanRiwayat
-    SimpanRiwayat --> TampilPesan
-    TampilPesan --> Logout
-    Logout --> End([●])
+|Admin|
+:Logout;
+stop
+@enduml
 ```

@@ -1,40 +1,39 @@
 # Activity Diagram: Laporan
 
-```mermaid
-flowchart TD
-    Start([●]) --> Login
+```plantuml
+@startuml
+title Activity Diagram - Laporan
 
-    subgraph Admin
-        Login[Login]
-        PilihMenu[Pilih Menu Laporan]
-        PilihJenis{Pilih Jenis Laporan}
-        InputFilter[Input Filter\nTanggal / Periode]
-        PilihEkspor[Ekspor Excel]
-    end
+|Admin|
+start
+:Login;
+:Pilih Menu Laporan;
 
-    subgraph Sistem
-        TampilMenu[Tampilkan Menu Laporan]
-        ProsesFetch[Ambil Data Laporan]
-        TampilLaporan[Tampilkan Laporan]
-        GenerateExcel[Generate File Excel]
-        DownloadFile[Download File]
-        Logout[Logout]
-    end
+|Sistem|
+:Tampilkan Menu Laporan;
 
-    Login --> PilihMenu
-    PilihMenu --> TampilMenu
-    TampilMenu --> PilihJenis
+|Admin|
+switch (Pilih Jenis Laporan)
+case (Penjualan)
+case (Barang Terlaris)
+case (Laba)
+case (Restock)
+endswitch
+:Input Filter\n(Tanggal / Periode);
 
-    PilihJenis -- Penjualan --> InputFilter
-    PilihJenis -- Barang Terlaris --> InputFilter
-    PilihJenis -- Laba --> InputFilter
-    PilihJenis -- Restock --> InputFilter
+|Sistem|
+:Ambil Data Laporan;
+:Tampilkan Laporan;
 
-    InputFilter --> ProsesFetch
-    ProsesFetch --> TampilLaporan
-    TampilLaporan --> PilihEkspor
-    PilihEkspor --> GenerateExcel
-    GenerateExcel --> DownloadFile
-    DownloadFile --> Logout
-    Logout --> End([●])
+|Admin|
+:Klik Ekspor Excel;
+
+|Sistem|
+:Generate File Excel;
+:Download File;
+
+|Admin|
+:Logout;
+stop
+@enduml
 ```

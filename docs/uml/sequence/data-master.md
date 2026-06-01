@@ -2,40 +2,43 @@
 
 > Mencakup: Barang, Kategori, Supplier, User
 
-```mermaid
-sequenceDiagram
-    actor Admin
-    participant Sistem
-    participant DB
+```plantuml
+@startuml
+title Sequence Diagram - Data Master
 
-    Admin->>Sistem: Login (username, password)
-    Sistem->>DB: Validasi kredensial
-    DB-->>Sistem: Data user valid
-    Sistem-->>Admin: Redirect ke Dashboard
+actor Admin
+participant Sistem
+database DB
 
-    Admin->>Sistem: Buka Menu Data Master
-    Admin->>Sistem: Pilih Entitas (Barang/Kategori/Supplier/User)
-    Sistem->>DB: Ambil daftar data
-    DB-->>Sistem: Data entitas
-    Sistem-->>Admin: Tampilkan Daftar Data
+Admin -> Sistem: Login (username, password)
+Sistem -> DB: Validasi kredensial
+DB --> Sistem: Data user valid
+Sistem --> Admin: Redirect ke Dashboard
 
-    alt Tambah / Edit
-        Admin->>Sistem: Submit Form Data
-        Sistem->>Sistem: Validasi Input
-        alt Validasi Gagal
-            Sistem-->>Admin: Tampilkan Pesan Error
-        else Validasi Berhasil
-            Sistem->>DB: Simpan / Update Data
-            DB-->>Sistem: Konfirmasi tersimpan
-            Sistem-->>Admin: Tampilkan Pesan Berhasil
-        end
-    else Hapus
-        Admin->>Sistem: Konfirmasi Hapus
-        Sistem->>DB: Hapus Data
-        DB-->>Sistem: Konfirmasi terhapus
-        Sistem-->>Admin: Tampilkan Pesan Berhasil
-    end
+Admin -> Sistem: Buka Menu Data Master
+Admin -> Sistem: Pilih Entitas (Barang/Kategori/Supplier/User)
+Sistem -> DB: Ambil daftar data
+DB --> Sistem: Data entitas
+Sistem --> Admin: Tampilkan Daftar Data
 
-    Admin->>Sistem: Logout
-    Sistem-->>Admin: Redirect ke Halaman Login
+alt Tambah / Edit
+  Admin -> Sistem: Submit Form Data
+  Sistem -> Sistem: Validasi Input
+  alt Validasi Gagal
+    Sistem --> Admin: Tampilkan Pesan Error
+  else Validasi Berhasil
+    Sistem -> DB: Simpan / Update Data
+    DB --> Sistem: Konfirmasi tersimpan
+    Sistem --> Admin: Tampilkan Pesan Berhasil
+  end
+else Hapus
+  Admin -> Sistem: Konfirmasi Hapus
+  Sistem -> DB: Hapus Data
+  DB --> Sistem: Konfirmasi terhapus
+  Sistem --> Admin: Tampilkan Pesan Berhasil
+end
+
+Admin -> Sistem: Logout
+Sistem --> Admin: Redirect ke Halaman Login
+@enduml
 ```

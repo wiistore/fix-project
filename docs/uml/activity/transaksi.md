@@ -1,42 +1,46 @@
 # Activity Diagram: Transaksi
 
-```mermaid
-flowchart TD
-    Start([●]) --> Login
+```plantuml
+@startuml
+title Activity Diagram - Transaksi
 
-    subgraph Kasir
-        Login[Login]
-        PilihMenu[Pilih Menu Transaksi]
-        PilihBarang[Pilih Barang]
-        InputJumlah[Input Jumlah Barang]
-        PilihMetode[Pilih Metode Pembayaran]
-    end
+|Kasir|
+start
+:Login;
+:Pilih Menu Transaksi;
 
-    subgraph Sistem
-        TampilHalaman[Tampilkan Halaman Transaksi]
-        TampilDetail[Tampilkan Detail Barang dan Harga]
-        HitungTotal[Hitung Total Pembayaran]
-        Validasi{Validasi Pembayaran}
-        SimpanTransaksi[Simpan Data Transaksi]
-        SimpanDetail[Simpan Detail Transaksi]
-        UpdateStok[Update Stok Barang]
-        CetakNota[Cetak Nota]
-        Logout[Logout]
-    end
+|Sistem|
+:Tampilkan Halaman Transaksi;
 
-    Login --> PilihMenu
-    PilihMenu --> TampilHalaman
-    TampilHalaman --> PilihBarang
-    PilihBarang --> TampilDetail
-    TampilDetail --> InputJumlah
-    InputJumlah --> HitungTotal
-    HitungTotal --> PilihMetode
-    PilihMetode --> Validasi
-    Validasi -- Gagal --> PilihMetode
-    Validasi -- Berhasil --> SimpanTransaksi
-    SimpanTransaksi --> SimpanDetail
-    SimpanDetail --> UpdateStok
-    UpdateStok --> CetakNota
-    CetakNota --> Logout
-    Logout --> End([●])
+|Kasir|
+:Pilih Barang;
+
+|Sistem|
+:Tampilkan Detail Barang dan Harga;
+
+|Kasir|
+:Input Jumlah Barang;
+
+|Sistem|
+:Hitung Total Pembayaran;
+
+|Kasir|
+:Pilih Metode Pembayaran;
+
+|Sistem|
+if (Validasi Pembayaran) then (Berhasil)
+  :Simpan Data Transaksi;
+  :Simpan Detail Transaksi;
+  :Update Stok Barang;
+  :Cetak Nota;
+else (Gagal)
+  |Kasir|
+  :Pilih Metode Pembayaran;
+  detach
+endif
+
+|Kasir|
+:Logout;
+stop
+@enduml
 ```

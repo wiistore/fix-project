@@ -1,44 +1,44 @@
 # Activity Diagram: Riwayat Transaksi
 
-```mermaid
-flowchart TD
-    Start([●]) --> Login
+```plantuml
+@startuml
+title Activity Diagram - Riwayat Transaksi
 
-    subgraph Admin
-        Login[Login]
-        PilihMenu[Pilih Menu Riwayat Transaksi]
-        PilihAksi{Pilih Aksi}
-        EditData[Edit Data Transaksi]
-        Konfirmasi[Konfirmasi Hapus]
-    end
+|Admin|
+start
+:Login;
+:Pilih Menu Riwayat Transaksi;
 
-    subgraph Sistem
-        TampilRiwayat[Tampilkan Daftar Riwayat Transaksi]
-        TampilDetail[Tampilkan Detail Transaksi]
-        ValidasiEdit{Validasi Input}
-        SimpanEdit[Simpan Perubahan]
-        HapusTransaksi[Hapus Transaksi]
-        TampilPesan[Tampilkan Pesan Berhasil]
-        Logout[Logout]
-    end
+|Sistem|
+:Tampilkan Daftar Riwayat Transaksi;
 
-    Login --> PilihMenu
-    PilihMenu --> TampilRiwayat
-    TampilRiwayat --> PilihAksi
+|Admin|
+switch (Pilih Aksi)
+case (Lihat Detail)
+  |Sistem|
+  :Tampilkan Detail Transaksi;
+case (Edit)
+  |Admin|
+  :Edit Data Transaksi;
+  |Sistem|
+  if (Validasi Input) then (Berhasil)
+    :Simpan Perubahan;
+    :Tampilkan Pesan Berhasil;
+  else (Gagal)
+    |Admin|
+    :Edit Data Transaksi;
+    detach
+  endif
+case (Hapus)
+  |Admin|
+  :Konfirmasi Hapus;
+  |Sistem|
+  :Hapus Transaksi;
+  :Tampilkan Pesan Berhasil;
+endswitch
 
-    PilihAksi -- Lihat Detail --> TampilDetail
-    TampilDetail --> PilihAksi
-
-    PilihAksi -- Edit --> EditData
-    EditData --> ValidasiEdit
-    ValidasiEdit -- Gagal --> EditData
-    ValidasiEdit -- Berhasil --> SimpanEdit
-    SimpanEdit --> TampilPesan
-
-    PilihAksi -- Hapus --> Konfirmasi
-    Konfirmasi --> HapusTransaksi
-    HapusTransaksi --> TampilPesan
-
-    TampilPesan --> Logout
-    Logout --> End([●])
+|Admin|
+:Logout;
+stop
+@enduml
 ```
