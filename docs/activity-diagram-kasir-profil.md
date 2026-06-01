@@ -1,6 +1,7 @@
 # Activity Diagram - Reset Password Kasir (Halaman Profil)
 
 ```mermaid
+%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
 flowchart TD
     A([Start]) --> B[Kasir membuka halaman Profil]
     B --> C[Sistem menampilkan data profil<br/>Username & Email read-only]

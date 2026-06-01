@@ -1,6 +1,7 @@
 # Activity Diagram - Proses Login
 
 ```mermaid
+%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
 flowchart TD
     A([Start]) --> B[User membuka halaman Login]
     B --> C[User memasukkan Username dan Password]

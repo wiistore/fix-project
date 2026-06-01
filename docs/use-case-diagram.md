@@ -3,6 +3,7 @@
 ## Diagram
 
 ```mermaid
+%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
 flowchart LR
     %% === ACTORS ===
     Admin((Admin))

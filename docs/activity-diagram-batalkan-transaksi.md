@@ -1,6 +1,7 @@
 # Activity Diagram - Pembatalan Transaksi (Refund)
 
 ```mermaid
+%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
 flowchart TD
     A([Start]) --> B[Admin membuka halaman Riwayat Transaksi]
     B --> C[Admin memilih transaksi yang akan dibatalkan]

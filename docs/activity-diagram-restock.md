@@ -1,6 +1,7 @@
 # Activity Diagram - Proses Restock (Stok Masuk/Keluar)
 
 ```mermaid
+%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
 flowchart TD
     A([Start]) --> B[Admin membuka halaman Restock]
     B --> C{Pilih tipe}

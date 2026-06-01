@@ -1,6 +1,7 @@
 # Activity Diagram - Proses Transaksi Penjualan
 
 ```mermaid
+%%{ init: { 'flowchart': { 'curve': 'linear' } } }%%
 flowchart TD
     A([Start]) --> B[Admin/Kasir membuka halaman POS]
     B --> C[Sistem menampilkan daftar barang aktif]
