@@ -27,19 +27,69 @@ if (!function_exists('label_money')) {
     }
 }
 
+if (!function_exists('label_app_base_url')) {
+    function label_app_base_url(): string
+    {
+        if (defined('BASE_URL') && BASE_URL !== '') {
+            return rtrim((string) BASE_URL, '/');
+        }
+
+        $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+
+        if (str_contains($scriptName, '/public/index.php')) {
+            return rtrim(str_replace('/public/index.php', '', $scriptName), '/');
+        }
+
+        if (str_contains($scriptName, '/index.php')) {
+            return rtrim(str_replace('/index.php', '', $scriptName), '/');
+        }
+
+        return '';
+    }
+}
+
 if (!function_exists('label_app_url')) {
     function label_app_url(string $path = ''): string
     {
-        return function_exists('app_url') ? app_url($path) : '/' . ltrim($path, '/');
+        if (function_exists('app_url')) {
+            return app_url($path);
+        }
+
+        $base = label_app_base_url();
+        $path = '/' . ltrim($path, '/');
+
+        return $base . $path;
     }
 }
 
 if (!function_exists('label_app_asset')) {
     function label_app_asset(string $path): string
     {
-        return function_exists('app_asset_versioned')
-            ? app_asset_versioned($path)
-            : (function_exists('app_asset') ? app_asset($path) : '/' . ltrim($path, '/'));
+        if (function_exists('app_asset_versioned')) {
+            return app_asset_versioned($path);
+        }
+
+        if (function_exists('app_asset')) {
+            return app_asset($path);
+        }
+
+        $cleanPath = strtok($path, '?');
+        $cleanPath = ltrim((string) $cleanPath, '/');
+
+        $url = label_app_url($cleanPath);
+
+        if (defined('PUBLIC_PATH')) {
+            $diskPath = PUBLIC_PATH . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $cleanPath);
+
+            if (is_file($diskPath)) {
+                $mtime = filemtime($diskPath);
+                if ($mtime !== false) {
+                    $url .= '?v=' . $mtime;
+                }
+            }
+        }
+
+        return $url;
     }
 }
 ?>
